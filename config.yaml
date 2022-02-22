@@ -1,0 +1,9 @@
+rabbitmq:
+  host: rabbitmq
+database:
+  driver: SQL Server
+  server: LAPTOP-KBSFJ1TM
+  database: TEST DB
+elastic:
+threads:
+  worker_num: 25
