@@ -1,14 +1,11 @@
 import pika
 import json
 
-# PATTERN DESIGN : STATE OF THE ART DESIGN
-
 class MetaClass(type):
 
     _instance = {}
 
     def __call__(cls, *args, **kwargs):
-        # Singelton Design Pattern
         if cls not in cls._instance:
             cls._instance[cls] = super(MetaClass, cls).__call__(*args, **kwargs)
             return cls._instance[cls]
