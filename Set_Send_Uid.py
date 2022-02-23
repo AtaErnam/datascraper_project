@@ -17,14 +17,11 @@ with open('config.yaml', 'r') as file:
 
 callback_server = RabbitMQconfig(queue='app.crawler.uid.queue', host=prime_service["rabbitmq"]["host"], routingKey='', exchange='app.crawler.uid')
 
-# PATTERN DESIGN : STATE OF THE ART DESIGN
-
 class MetaClass(type):
 
     _instance = {}
 
     def __call__(cls, *args, **kwargs):
-        # Singelton Design Pattern
         if cls not in cls._instance:
             cls._instance[cls] = super(MetaClass, cls).__call__(*args, **kwargs)
             return cls._instance[cls]
@@ -42,18 +39,6 @@ class RabbitMQServerConfigure(metaclass=MetaClass):
         self.publishing_routingKey = publishing_routingKey
         self.publishing_exchange = publishing_exchange
         self.callback_server = RabbitMQconfig(queue=self.publishing_queue, host=self.host, routingKey=self.publishing_routingKey, exchange=self.publishing_exchange)
-
-"""
-class PublishConfig(metaclass=MetaClass):
-
-    def __init__(self, host='localhost', publishing_queue='hello', publishing_routingKey='', publishing_excahnge='hello'):
-
-        
-        self.publishing_queue = publishing_queue
-        self.publishing_routingKey = publishing_routingKey
-        self.publishing_exchange = publishing_excahnge
-        self.callback_server = RabbitMQconfig(queue=self.publishing_queue, host=self.host, routingKey=self.publishing_routingKey, exchange=self.publishing_exchange)
-"""
    
 class RabbitMQServer():
 
@@ -75,17 +60,10 @@ class RabbitMQServer():
 
         Payload = body.decode("utf-8")
         
-        #print(type(Payload))
         print("Data Received: {}".format(Payload))
         
-        #publishing_server = self.callback_server
         Payload = Payload.split(",")
 
-        #with RabbitMQ(callback_server) as rabbitmq:
-        #    start = datetime.datetime.now()
-        #    rabbitmq.publish(payload=Payload)
-        #    finish = datetime.datetime.now() - start
-        #    print(finish)
         Uid_list = set({})
         for i in Payload:
             Uid_list.add(i)

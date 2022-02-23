@@ -1,7 +1,3 @@
-# Consume Uid from exchange 
-# Scrape with Uid
-# Publish to App_Info exchange 
-
 import datetime
 from datetime import timedelta
 import pika
@@ -19,17 +15,14 @@ callback_server = RabbitMQconfig(queue='app.crawler.app.metadata.queue', host=pr
 
 
 from elasticsearch import Elasticsearch
-# create a client instance of Elasticsearch
-es = Elasticsearch(hosts="http://localhost:9200")
 
-# PATTERN DESIGN : STATE OF THE ART DESIGN
+es = Elasticsearch(hosts="http://localhost:9200")
 
 class MetaClass(type):
 
     _instance = {}
 
     def __call__(cls, *args, **kwargs):
-        # Singelton Design Pattern
         if cls not in cls._instance:
             cls._instance[cls] = super(MetaClass, cls).__call__(*args, **kwargs)
             return cls._instance[cls]
@@ -47,18 +40,6 @@ class RabbitMQServerConfigure(metaclass=MetaClass):
         self.publishing_routingKey = publishing_routingKey
         self.publishing_exchange = publishing_exchange
         self.callback_server = RabbitMQconfig(queue=self.publishing_queue, host=self.host, routingKey=self.publishing_routingKey, exchange=self.publishing_exchange)
-
-"""
-class PublishConfig(metaclass=MetaClass):
-
-    def __init__(self, host='localhost', publishing_queue='hello', publishing_routingKey='', publishing_excahnge='hello'):
-
-        
-        self.publishing_queue = publishing_queue
-        self.publishing_routingKey = publishing_routingKey
-        self.publishing_exchange = publishing_excahnge
-        self.callback_server = RabbitMQconfig(queue=self.publishing_queue, host=self.host, routingKey=self.publishing_routingKey, exchange=self.publishing_exchange)
-"""
    
 class RabbitMQServer():
 
@@ -79,11 +60,8 @@ class RabbitMQServer():
     def callback_publish(self,method, properties, body):
 
         Payload = body.decode("utf-8")
-        
-        #print(type(Payload))
+    
         print("Data Received: {}".format(Payload))
-        #publishing_server = self.callback_server
-
         
         def fetch(session, Uid):
             with RabbitMQ(callback_server) as rabbitmq:
@@ -114,12 +92,7 @@ class RabbitMQServer():
                     app_json = json.dumps(app.__dict__,default=str)
                     print(app_json)
                     rabbitmq.publish(payload=app_json)
-                """
-                app = Scraper.Scrape(session,Uid)
-                app_json = json.dumps(app.__dict__,default=str)
-                rabbitmq.publish(payload=app_json)
-                """
-        
+                    
         Payload = Payload.split(",")
         
         with ThreadPoolExecutor(max_workers=prime_service["threads"]["worker_num"]) as executor:
