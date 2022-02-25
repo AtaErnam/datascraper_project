@@ -87,7 +87,7 @@ class RabbitMQServer():
                     
                     es_date = es.search(index="app_data", body=search_param)["hits"]["hits"][0]["_source"]["InsertionDate"]
                     es_date = datetime.datetime.fromisoformat(es_date)
-                    modified_date = es_date + timedelta(days=-30)
+                    modified_date = es_date + timedelta(days=30)
                     
                     if modified_date <= datetime.datetime.now():
 
