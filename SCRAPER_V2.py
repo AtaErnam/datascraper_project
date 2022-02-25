@@ -10,7 +10,6 @@ class App():
         self.DetailUrl = DetailUrl
         self.InsertionDate = InsertionDate
 
-
 class Scraper():
 
     def Scrape(session,Uid):

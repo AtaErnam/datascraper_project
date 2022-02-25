@@ -15,7 +15,9 @@ import yaml
 with open('config.yaml', 'r') as file:
    prime_service = yaml.safe_load(file)
 
-callback_server = RabbitMQconfig(queue='app.crawler.uid.queue', host=prime_service["rabbitmq"]["host"], routingKey='', exchange='app.crawler.uid')
+callback_server = RabbitMQconfig(queue='app.crawler.uid.queue', host=prime_service["rabbitmq"]["host"], routingKey='', exchange='app.crawler.uid',
+                                    port=prime_service["rabbitmq"]["port"],virtual_host=prime_service["rabbitmq"]["virtual_host"],
+                                    user=prime_service["rabbitmq"]["user"],passw=prime_service["rabbitmq"]["passw"])
 
 class MetaClass(type):
 
@@ -28,12 +30,17 @@ class MetaClass(type):
 
 class RabbitMQServerConfigure(metaclass=MetaClass):
     
-    def __init__(self, host='rabbitmq', queue='hello', publishing_queue='hello', publishing_routingKey='', publishing_exchange='hello'):
+    def __init__(self, host='rabbitmq', queue='hello', publishing_queue='hello', publishing_routingKey='', publishing_exchange='hello',port='5672',virtual_host='/',user='guest',passw='guest'):
 
         # Server initialization
 
         self.host = host
         self.queue = queue
+
+        self.port = port
+        self.virtual_host = virtual_host
+        self.user = user
+        self.passw = passw
 
         self.publishing_queue = publishing_queue
         self.publishing_routingKey = publishing_routingKey
@@ -49,8 +56,10 @@ class RabbitMQServer():
         """
 
         self.server = server
+        credentials = pika.PlainCredentials(self.server.user, self.server.passw)
+
         self._connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host=self.server.host)
+            pika.ConnectionParameters(host=self.server.host,port=self.server.port,virtual_host=self.server.virtual_host,credentials=credentials)
         )
         self._channel = self._connection.channel()
         self._temp = self._channel.queue_declare(queue=self.server.queue, durable=True)

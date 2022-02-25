@@ -9,7 +9,9 @@ with open('config.yaml', 'r') as file:
 
 if __name__ == "__main__":
     start = datetime.datetime.now()
-    serverconfigure = RabbitMQServerConfigure(host=prime_service["rabbitmq"]["host"], queue="app.crawler.uid.queue", publishing_queue='app.crawler.app.metadata.queue', publishing_routingKey='', publishing_exchange='app.crawler.app.metadata')
+    serverconfigure = RabbitMQServerConfigure(host=prime_service["rabbitmq"]["host"], queue="app.crawler.uid.queue", publishing_queue='app.crawler.app.metadata.queue', publishing_routingKey='', publishing_exchange='app.crawler.app.metadata',
+                                                port=prime_service["rabbitmq"]["port"],virtual_host=prime_service["rabbitmq"]["virtual_host"],
+                                                user=prime_service["rabbitmq"]["user"],passw=prime_service["rabbitmq"]["passw"])
     server = RabbitMQServer(server=serverconfigure)
 
     try:

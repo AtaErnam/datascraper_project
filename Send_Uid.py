@@ -15,7 +15,9 @@ with open("Uid_Names.json") as json_file:
         Uid_list.add(list(i.values())[0])
 
 if __name__ == "__main__":
-    server = RabbitMQconfig(queue='test.queue', host=prime_service["rabbitmq"]["host"], routingKey='', exchange='test.exchange')
+    server = RabbitMQconfig(queue='test.queue', host=prime_service["rabbitmq"]["host"], routingKey='', exchange='test.exchange',
+                                port=prime_service["rabbitmq"]["port"],virtual_host=prime_service["rabbitmq"]["virtual_host"],
+                                user=prime_service["rabbitmq"]["user"],passw=prime_service["rabbitmq"]["passw"])
 
     with RabbitMQ(server) as rabbitmq:
         start = datetime.datetime.now()
