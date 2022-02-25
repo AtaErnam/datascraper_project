@@ -1,9 +1,17 @@
 rabbitmq:
   host: rabbitmq
+  port: '5672'
+  virtual_host: '/'
+  user: guest
+  passw: guest
 database:
   driver: SQL Server
   server: LAPTOP-KBSFJ1TM
   database: TEST DB
+  user: user
+  passw: pass
 elastic:
+  user: user
+  passw: pass
 threads:
   worker_num: 25
