@@ -1,6 +1,6 @@
 from Set_Send_Uid import RabbitMQServer, RabbitMQServerConfigure, MetaClass
 import datetime
-import sys, os, ast
+import sys, os
 
 import yaml
 with open('config.yaml', 'r') as file:

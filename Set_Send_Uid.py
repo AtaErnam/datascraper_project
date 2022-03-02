@@ -1,15 +1,8 @@
 # Consume Uid from exchange 
 # Scrape with Uid
 # Publish to App_Info exchange 
-
-import datetime
-from datetime import timedelta
 import pika
 from Producer import RabbitMQ, RabbitMQconfig, MetaClass
-from SCRAPER_V2 import Scraper, App
-import requests
-from concurrent.futures import ThreadPoolExecutor
-import json
 
 import yaml
 with open('config.yaml', 'r') as file:

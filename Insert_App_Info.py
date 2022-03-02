@@ -3,12 +3,10 @@
 # Insert App Info and categories to DB
 from SCRAPER_V2 import App
 import pika
-import ast
 import json
 import datetime
 import pyodbc
 import yaml
-
 
 with open('config.yaml', 'r') as file:
    prime_service = yaml.safe_load(file)

@@ -1,6 +1,5 @@
 import json
 from Producer import RabbitMQ, RabbitMQconfig, MetaClass
-import pika
 import datetime
 
 import yaml
