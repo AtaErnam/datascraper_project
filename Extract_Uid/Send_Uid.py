@@ -1,5 +1,5 @@
 import json
-from Producer import RabbitMQ, RabbitMQconfig, MetaClass
+from Extract_Uid.Producer import RabbitMQ, RabbitMQconfig, MetaClass
 import pika
 import datetime
 

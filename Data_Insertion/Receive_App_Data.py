@@ -1,5 +1,5 @@
 import sys, os
-from Insert_App_Info import RabbitMQServer, RabbitMQServerConfigure, MetaClass
+from Data_Insertion.Insert_App_Info import RabbitMQServer, RabbitMQServerConfigure, MetaClass
 
 import yaml
 with open('config.yaml', 'r') as file:

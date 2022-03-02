@@ -1,7 +1,7 @@
 # Consume App Info from exchange
 # Map app categories
 # Insert App Info and categories to DB
-from SCRAPER_V2 import App
+from Data_Scraping.SCRAPER_V2 import App
 import pika
 import ast
 import json

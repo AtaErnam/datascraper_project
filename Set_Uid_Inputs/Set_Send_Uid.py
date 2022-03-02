@@ -1,8 +1,12 @@
+# Consume Uid from exchange 
+# Scrape with Uid
+# Publish to App_Info exchange 
+
 import datetime
 from datetime import timedelta
 import pika
-from Producer import RabbitMQ, RabbitMQconfig, MetaClass
-from SCRAPER_V2 import Scraper, App
+from Extract_Uid.Producer import RabbitMQ, RabbitMQconfig, MetaClass
+from Data_Scraping.SCRAPER_V2 import Scraper, App
 import requests
 from concurrent.futures import ThreadPoolExecutor
 import json
@@ -11,13 +15,9 @@ import yaml
 with open('config.yaml', 'r') as file:
    prime_service = yaml.safe_load(file)
 
-callback_server = RabbitMQconfig(queue='app.crawler.app.metadata.queue', host=prime_service["rabbitmq"]["host"], routingKey='', exchange='app.crawler.app.metadata',
+callback_server = RabbitMQconfig(queue='app.crawler.uid.queue', host=prime_service["rabbitmq"]["host"], routingKey='', exchange='app.crawler.uid',
                                     port=prime_service["rabbitmq"]["port"],virtual_host=prime_service["rabbitmq"]["virtual_host"],
                                     user=prime_service["rabbitmq"]["user"],passw=prime_service["rabbitmq"]["passw"])
-
-from elasticsearch import Elasticsearch
-
-es = Elasticsearch(hosts="http://localhost:9200",basic_auth=(prime_service["elastic"]["user"], prime_service["elastic"]["passw"]))
 
 class MetaClass(type):
 
@@ -68,46 +68,22 @@ class RabbitMQServer():
     def callback_publish(self,method, properties, body):
 
         Payload = body.decode("utf-8")
-    
+        
         print("Data Received: {}".format(Payload))
         
-        def fetch(session, Uid):
-            with RabbitMQ(callback_server) as rabbitmq:
-                
-                search_param = {
-                    "query": {
-                        "terms": {
-                            "Uid": [Uid] # finds Uids
-                        }
-                    }
-                }
-                es_uid = es.search(index="app_data", body=search_param)["hits"]["hits"][0]["_source"]["Uid"]
-                
-                if es_uid == Uid:
-                    
-                    es_date = es.search(index="app_data", body=search_param)["hits"]["hits"][0]["_source"]["InsertionDate"]
-                    es_date = datetime.datetime.fromisoformat(es_date)
-                    modified_date = es_date + timedelta(days=30)
-                    
-                    if modified_date <= datetime.datetime.now():
-
-                        app = Scraper.Scrape(session,Uid)
-                        app_json = json.dumps(app.__dict__,default=str)
-                        print(app_json)
-                        rabbitmq.publish(payload=app_json)
-                else:
-                    app = Scraper.Scrape(session,Uid)
-                    app_json = json.dumps(app.__dict__,default=str)
-                    print(app_json)
-                    rabbitmq.publish(payload=app_json)
-                    
         Payload = Payload.split(",")
-        
-        with ThreadPoolExecutor(max_workers=prime_service["threads"]["worker_num"]) as executor:
-            with requests.Session() as session:
-                executor.map(fetch, [session] * len(Payload), Payload)
-                executor.shutdown(wait=True)
 
+        Uid_list = set({})
+        for i in Payload:
+            Uid_list.add(i)
+            
+            if len(Uid_list) >= 250:
+                
+                with RabbitMQ(callback_server) as rabbitmq:
+                    Uid_list = ",".join(Uid_list)
+                    rabbitmq.publish(payload=Uid_list)
+                Uid_list = set({})
+           
     def start_server_for_consume_publish(self):
         self._channel.basic_consume(
                 queue=self.server.queue,
